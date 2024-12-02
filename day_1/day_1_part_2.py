@@ -23,21 +23,20 @@ def calculate_time(func):
 
 @calculate_time
 def my_code():
-    left_pair = []
-    right_pair = []
-    with open("input_1_part_2.txt", "r") as infile:
+    left_values = []
+    right_values = []
+    with open("input_part_2.txt", "r") as infile:
         for line in infile:
             split_line = line.split()
-            left_pair.append(split_line[0])
-            right_pair.append(split_line[1])
+            left_values.append(split_line[0])
+            right_values.append(split_line[1])
 
-    left_pair = np.array(np.int64(left_pair))
-    right_pair = np.array(np.int64(right_pair))
+    left_values = np.array(np.int64(left_values))
+    right_values = np.array(np.int64(right_values))
 
     similarity = 0
-    for element in left_pair:
-        similarity = similarity + np.where(element==element, right_pair).size
-
-    difference = np.sum(np.abs(left_pair-right_pair))
-    print(difference)
+    for element in left_values:
+        #print(f"Elements: {element} Instances: {right_values[right_values == element]}, size: {np.size(right_values[right_values == element])}")
+        similarity = similarity + (element*(right_values[element == right_values].size))
+    print(similarity)
 my_code()
