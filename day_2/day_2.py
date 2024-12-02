@@ -27,32 +27,14 @@ def my_code():
     with open("input_part_1.txt", "r") as infile:
         for line in infile:
             single_report = np.int64(line.split())
-            safety = [True, True] #Index 0 represents True if change is less than 3, and [1] represents increasing or decreasing
-            for index, element in enumerate(single_report):
-                try: 
-                    if abs(element - single_report[index+1]) < 3:
-                        safety[0] = True
-                    else:
-                        safety[0] = False
-                except:
-                    pass
+            #Checks if the differnce between two numbers are 1, 2 or 3. Returns
+            difference = not (np.any((np.abs(single_report[1:] - single_report[:-1]) > 3)) or np.any((np.abs(single_report[1:] - single_report[:-1]) == 0)))
+            #Checks if the values are increasing
+            increasing = np.all(single_report[1:] >=  single_report[:-1])
+            #Checks if the values are decreasing
+            decreasing = np.all(single_report[1:] <=  single_report[:-1])
 
-                if safety[1] == True:
-                    if single_report[element > single_report].size == 0:
-                        print("Increasing..")
-                        safety[1] = True 
-                    else:
-                        safety[1] = False 
-
-                    if single_report[element < single_report].size == 0:
-                        print("Decreasing..")
-                        safety[1] = True 
-                    else:
-                        safety[1] = False
-
-            if sum(safety) == 2:
+            if difference and (increasing or decreasing):
                 reports += 1
     print(reports)
-
-
 my_code()
