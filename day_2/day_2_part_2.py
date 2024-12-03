@@ -42,8 +42,10 @@ def my_code():
             if diff == False and dampner == False:    
                 for index, numbers in enumerate(np.abs(report_difference)):
                     if numbers > 3 or numbers == 0:
+                        #print(report_difference, "before")
                         single_report = np.delete(single_report, index)
                         report_difference = single_report[1:]-single_report[:-1]
+                        #print(report_difference, "after")
                         diff = difference(report_difference)
                         dampner = True
                         break
@@ -79,7 +81,7 @@ def my_code():
 
 def difference(diff_report):
     #Checks if the differnce between two numbers are 1, 2 or 3. 
-    return not (np.any(np.abs(diff_report) > 3) or np.any(np.abs(diff_report) == 0))
+    return (not np.any(np.abs(diff_report) > 3)) or (not np.any(np.abs(diff_report) == 0))
 
 def increasing(diff_report):
         #Checks if the values are increasing
