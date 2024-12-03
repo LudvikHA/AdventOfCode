@@ -26,53 +26,69 @@ def my_code():
     reports = 0
     with open("input_part_2.txt", "r") as infile:
         for line_number, line in enumerate(infile):
-            single_report = np.int64(line.split())
-            report_difference = single_report[1:]-single_report[:-1]
+            dampner = False
+            single_report = np.int64(np.array(line.split()))
+            report_difference = update_diff(single_report)
 
             diff = difference(report_difference)
             increase = increasing(report_difference)
             decrease = decreasing(report_difference)
 
-            #Difference can be used to find decreasing and increasing. 
-            #If all numbers negative then decreasing. 
-            #If all numbers positive increasing
-            dampner = False #True if a value has been removed
-
-            #Removes the first instance of diff that that is not 1, 2, 3
-            if diff == False and dampner == False:    
+            if diff == False:
                 for index, numbers in enumerate(np.abs(report_difference)):
                     if numbers > 3 or numbers == 0:
-                        #print(report_difference, "before")
+                        dampner = True
+                        #print(single_report, "before")
                         single_report = np.delete(single_report, index)
-                        report_difference = single_report[1:]-single_report[:-1]
-                        #print(report_difference, "after")
+                        report_difference = update_diff(single_report)
                         diff = difference(report_difference)
-                        dampner = True
-                        break
-                    
-            if increase == False and dampner == False and decrease == False:
-                for index, numbers in enumerate(report_difference):
-                    if numbers < 0:
-                        report_difference = np.delete(report_difference, index)
-                        increase = increasing(report_difference)
-                        dampner = True
-                        if increase == False:
-                            report_difference = np.insert(report_difference, index, numbers)
-                            dampner = False
-                        break
-                             
-            if decrease == False and dampner == False and increase == False:
-                for index, numbers in enumerate(report_difference):
-                    if numbers > 0:
-                        report_difference = np.delete(report_difference, index)
-                        decrease = decreasing(report_difference)
-                        dampner = True
-                        if decrease == False:
-                            report_difference = np.insert(report_difference, index, numbers)
-                            dampner = False
+                        #print(single_report, "after")
                         break
 
-            print(f"diff: {diff}, increase: {increase}, decrease: {decrease}, dampner: {dampner}, line number: {line_number}, Safe: {diff == True and (increase == True or decrease == True)}")
+            if increase == False and dampner == False and decrease == False:
+                single_report_original = single_report
+                for index, numbers in enumerate(single_report):
+                    try:
+                        if not numbers < single_report[index+1]:
+                            print(single_report, "before ince")
+                            single_report = np.delete(single_report, index)
+                            report_difference = update_diff(single_report)
+                            print(single_report, "after ince")
+                            break
+
+                    except IndexError:
+                            #If increase fails to make safe revert changes
+                            single_report = single_report_original
+                            report_difference = update_diff(single_report)
+
+                #Checks decreasing if increase fails
+                increase = increasing(report_difference)
+                if increase == False:
+                    single_report = single_report_original
+                    report_difference = update_diff(single_report)
+                    for index, numbers in enumerate(single_report):
+                        try:
+                            if not numbers > single_report[index+1]:
+                                print(single_report, "before dec")
+                                single_report = np.delete(single_report, index)
+                                report_difference = update_diff(single_report)
+                                print(single_report, "after dec")
+                                single_report = single_report_original
+                                report_difference = update_diff(single_report)
+                                break
+
+                        except IndexError:
+                                #If increase fails to make safe revert changes
+                                single_report = single_report_original
+                                report_difference = update_diff(single_report)           
+
+            diff = difference(report_difference)
+            increase = increasing(report_difference)
+            decrease = decreasing(report_difference)
+                 
+
+
+            print(f"diff: {diff}, increase: {increase}, decrease: {decrease}, dampner: {dampner}, line number: {line_number+1}, Safe: {diff == True and (increase == True or decrease == True)}")
 
             if diff == True and (increase == True or decrease == True):
                 reports += 1
@@ -81,7 +97,7 @@ def my_code():
 
 def difference(diff_report):
     #Checks if the differnce between two numbers are 1, 2 or 3. 
-    return (not np.any(np.abs(diff_report) > 3)) or (not np.any(np.abs(diff_report) == 0))
+    return not (np.any(np.abs(diff_report) > 3) or np.any(np.abs(diff_report) == 0))
 
 def increasing(diff_report):
         #Checks if the values are increasing
@@ -90,4 +106,8 @@ def increasing(diff_report):
 def decreasing(diff_report):
         #Checks if the values are increasing
         return np.all(diff_report <= 0)
+def update_diff(report):
+     #Updates report_difference
+     return report[1:]-report[:-1] #Contains the differences between numbers
 my_code()
+
