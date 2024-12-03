@@ -29,10 +29,34 @@ def my_code():
     total_sum = 0
     with open("input_part_2.txt", "r") as infile:
         for lines in infile:
-            dont_blocks = re.split(dont_finder, lines)
-            for index, blocks in enumerate(dont_blocks):
-                    pass
-                    total_sum += finding_muls(dont_blocks[0])
+            dont_match = re.search(dont_finder, lines)
+            dont_block = dont_match.span()
+            #Runs before first dont is found. Runs only once
+            total_sum += finding_muls(lines[:dont_block[0]])
+
+            block_amount = re.findall(dont_finder, lines)
+            for blocks in block_amount:
+                #Finds do
+                do_match = re.search(do_finder, lines[dont_block[1]:])
+                do_block = do_match.span()
+
+                try:
+                    #Finds dont
+                    dont_match = re.search(dont_finder, lines[do_block[1]:])
+                    dont_block = dont_match.span()
+
+                    #Adds all mulls
+                    total_sum += finding_muls(lines[do_block[1]:dont_block[0]])
+                    
+                except AttributeError:
+                    #Adds all mulls
+                    total_sum += finding_muls(lines[do_block[1]:])
+
+
+
+
+
+
 
 
 
@@ -44,6 +68,7 @@ def my_code():
 def finding_muls(line):
     mul_finder = re.compile(r"mul[(]([0-9]+),([0-9]+)[)]")
     values_to_mul = re.findall(mul_finder, line)
+    mul_sum = 0
     for pairs in values_to_mul:
         mul_sum = mul_sum + int(pairs[0])*int(pairs[1])
     return mul_sum
