@@ -25,7 +25,7 @@ def calculate_time(func):
 def my_code():
     reports = 0
     with open("input_part_2.txt", "r") as infile:
-        for line in infile:
+        for line_number, line in enumerate(infile):
             single_report = np.int64(line.split())
             report_difference = single_report[1:]-single_report[:-1]
 
@@ -36,16 +36,17 @@ def my_code():
             #Difference can be used to find decreasing and increasing. 
             #If all numbers negative then decreasing. 
             #If all numbers positive increasing
-            print(f"diff: {diff}, increase: {increase}, decrease: {decrease}")
             dampner = False #True if a value has been removed
 
             #Removes the first instance of diff that that is not 1, 2, 3
             if diff == False and dampner == False:    
                 for index, numbers in enumerate(np.abs(report_difference)):
                     if numbers > 3 or numbers == 0:
-                        report_difference = np.delete(report_difference, index)
+                        single_report = np.delete(single_report, index)
+                        report_difference = single_report[1:]-single_report[:-1]
                         diff = difference(report_difference)
                         dampner = True
+                        break
                     
             if increase == False and dampner == False and decrease == False:
                 for index, numbers in enumerate(report_difference):
@@ -55,6 +56,7 @@ def my_code():
                         dampner = True
                         if increase == False:
                             report_difference = np.insert(report_difference, index, numbers)
+                            dampner = False
                         break
                              
             if decrease == False and dampner == False and increase == False:
@@ -65,9 +67,12 @@ def my_code():
                         dampner = True
                         if decrease == False:
                             report_difference = np.insert(report_difference, index, numbers)
+                            dampner = False
                         break
 
-            if diff and (increase or decrease):
+            print(f"diff: {diff}, increase: {increase}, decrease: {decrease}, dampner: {dampner}, line number: {line_number}, Safe: {diff == True and (increase == True or decrease == True)}")
+
+            if diff == True and (increase == True or decrease == True):
                 reports += 1
 
     print(reports)
@@ -78,9 +83,9 @@ def difference(diff_report):
 
 def increasing(diff_report):
         #Checks if the values are increasing
-        return np.all(diff_report > 0)
+        return np.all(diff_report >= 0)
 
 def decreasing(diff_report):
         #Checks if the values are increasing
-        return np.all(diff_report < 0)
+        return np.all(diff_report <= 0)
 my_code()
