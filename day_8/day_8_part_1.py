@@ -25,15 +25,16 @@ def calculate_time(func):
 def blank_map(frequency: str) -> list[str]:
     #Makes a blank map with only one frequency
     blank_map = []
-    new_line = ""
     with open("input_part_1.txt", "r") as infile:
         for line in infile:
+            line = line.strip()
+            new_line = ""
             for character in line:
-                if character not in f".{frequency}":
-                    new_line = new_line + "."
-                else:
+                if character in f"{frequency}":
                     new_line = new_line + character
-            blank_map.append(line.strip())
+                else:
+                    new_line = new_line + "."
+            blank_map.append(new_line)
     return blank_map
 
 def update_map(coordinates: tuple[int, int], frequency: str, map: list[str]):
@@ -62,7 +63,7 @@ def my_code():
     column_length = len(map[0])
     antinode = 0
 
-    test_map = blank_map("a")
+    test_map = blank_map("0A")
 
     #Finds every frequency in the map
     for frequency_row_pos, frequency_row in enumerate(map):
@@ -82,20 +83,25 @@ def my_code():
                             frequency_partner_distance = (abs(current_frequency_pos[0]-frequency_partner[0]), abs(current_frequency_pos[1]-frequency_partner[1]))
 
                             #Checks if the antinode of the partner is outside the current map size
-                            partner_antinode_pos = (frequency_partner[0]+frequency_partner_distance[0], frequency_partner[1]+frequency_partner_distance[1])
-                            current_antinode_pos = (current_frequency_pos[0]-frequency_partner_distance[0], current_frequency_pos[1]-frequency_partner_distance[1])
+                            if current_frequency_pos[1] > frequency_partner[1]:
+                                partner_antinode_pos = (frequency_partner[0]+frequency_partner_distance[0], frequency_partner[1]-frequency_partner_distance[1])
+                                current_antinode_pos = (current_frequency_pos[0]-frequency_partner_distance[0], current_frequency_pos[1]+frequency_partner_distance[1])
+                            else:
+                                partner_antinode_pos = (frequency_partner[0]+frequency_partner_distance[0], frequency_partner[1]+frequency_partner_distance[1])
+                                current_antinode_pos = (current_frequency_pos[0]-frequency_partner_distance[0], current_frequency_pos[1]-frequency_partner_distance[1])
 
                             print(f"Frequency parnter pos: {frequency_partner}, Current frequency pos: {current_frequency_pos}")
-                            
                             print(f"Column length: {column_length}, Row length: {row_length}")
 
                             if partner_antinode_pos[0] < row_length and partner_antinode_pos[1] < column_length:
                                 test_map[partner_antinode_pos[0]] = update_map(partner_antinode_pos, frequency, test_map)
                                 print(partner_antinode_pos, "partner")
+                                antinode += 1
 
                             if (current_antinode_pos[0] >= 0 and current_antinode_pos[1] >= 0): 
                                 test_map[current_antinode_pos[0]] = update_map(current_antinode_pos, frequency, test_map)
                                 print(current_antinode_pos, "current")
+                                antinode += 1
     print_map(test_map)
     print()
 
