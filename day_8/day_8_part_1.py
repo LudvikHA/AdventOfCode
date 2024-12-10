@@ -93,13 +93,13 @@ def my_code():
                             print(f"Frequency parnter pos: {frequency_partner}, Current frequency pos: {current_frequency_pos}")
                             print(f"Column length: {column_length}, Row length: {row_length}")
 
-                            if partner_antinode_pos[0] < row_length and partner_antinode_pos[1] < column_length:
+                            if (partner_antinode_pos[0] < row_length and partner_antinode_pos[1] < column_length) and (partner_antinode_pos[0] >= 0 and partner_antinode_pos[1] >= 0):
                                 test_map[partner_antinode_pos[0]] = update_map(partner_antinode_pos, frequency, test_map)
                                 print(partner_antinode_pos, "partner")
                                 if partner_antinode_pos not in antinode_collection:
                                     antinode_collection.append(partner_antinode_pos)
 
-                            if (current_antinode_pos[0] >= 0 and current_antinode_pos[1] >= 0): 
+                            if (current_antinode_pos[0] >= 0 and current_antinode_pos[1] >= 0) and (current_antinode_pos[0] < row_length and current_antinode_pos[1] < column_length): 
                                 test_map[current_antinode_pos[0]] = update_map(current_antinode_pos, frequency, test_map)
                                 print(current_antinode_pos, "current")
                                 if current_antinode_pos not in antinode_collection:
@@ -108,6 +108,7 @@ def my_code():
     print()
 
     print_map(map)
+    print(antinode_collection)
     print(len(antinode_collection))
 
 my_code()
