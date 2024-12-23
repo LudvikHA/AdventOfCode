@@ -45,12 +45,13 @@ def my_code():
         altered_disk_map = np.copy(formatted_disk_map)
         complete = False
         print(formatted_disk_map)
+        free_spaces = len(formatted_disk_map[formatted_disk_map != "."])
         for index_formatted, block_component in enumerate(formatted_disk_map[::-1]):
             if complete == True:
                 break
             elif block_component != ".":
                 for index_altered, block_altered in enumerate(altered_disk_map):
-                    if np.all(altered_disk_map[index_formatted:]=="."):
+                    if np.all(altered_disk_map[:free_spaces]!="."):
                         complete = True
                         break
                         
