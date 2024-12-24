@@ -22,11 +22,10 @@ def calculate_time(func):
 def ouput_processor(disk_map):
     output_disk_map = ""
     for index, blocks in enumerate(disk_map):
-        if isinstance(blocks, dict):
-            for i in range(list(blocks.keys())[0]):
-                output_disk_map = output_disk_map + str(list(blocks.values())[0])
+        if blocks[1] != -1:
+            output_disk_map = output_disk_map + str(blocks[1])*blocks[0]
         else:
-            output_disk_map = output_disk_map + "."*blocks
+            output_disk_map = output_disk_map + "."*blocks[0]
     return output_disk_map
 
 @calculate_time
@@ -40,49 +39,41 @@ def my_code():
         spaced_blocks = []
         for index, blocks in enumerate(disk_map):
             if index % 2 != 0:
-                spaced_blocks.append({blocks:"."})
+                spaced_blocks.append((blocks, -1))
             else:
-                spaced_blocks.append({blocks:ID})
+                spaced_blocks.append((blocks, ID))
                 ID += 1
-
+       
+        results = []
+        result_indices = []
         formatted_disk_map = np.array(spaced_blocks)
-        altered_disk_map = formatted_disk_map[1:].copy()
-        length_disk_map = len(formatted_disk_map)
+        altered_disk_map = formatted_disk_map.copy()
 
-        print(altered_disk_map)
-
-        file_disk_map = formatted_disk_map[0:length_disk_map:2]
-        free_disk_map = formatted_disk_map[1:length_disk_map:2]
-        rev_file_disk_map = np.flip(file_disk_map)
-
-        print(free_disk_map)
-
-        modifier = 0
-        for index, blocks in enumerate(rev_file_disk_map):
-            file_block_len = list(blocks.keys())[0]
-            free_space = np.where(free_disk_map >= file_block_len)
+        file_index = np.flip(np.where(altered_disk_map[:, 1] > 0)) #Finds the index of all tuples that arent free spaces
+        for index in file_index[0]:
+            block = altered_disk_map[index] #Finds the value of the tuple
+            length_of_block = block[0]
+            free_space = np.where(altered_disk_map[:, 0] >= length_of_block)
 
             try:
-                #print(free_space)
-                first_free_space = free_space[0][0]
-                #print(free_disk_map[first_free_space] - file_block_len, "Update", "blocks", blocks)
-                free_disk_map[first_free_space] -= file_block_len
-                
-                altered_disk_map[first_free_space+modifier] = free_disk_map[first_free_space]
-                altered_disk_map = np.insert(altered_disk_map, first_free_space+modifier, blocks)
-                
-                print(f"Output: {ouput_processor(altered_disk_map)}")
+                counter = 0
+                while not free_space[0][counter] in file_index:
+                    counter += 1
 
+                altered_disk_map[free_space[0][counter]-1, 0] -= length_of_block
+                results.append((block, free_space[0][counter]))
+                result_indices.append(free_space[0][counter])
             except IndexError:
                 pass
+        print(results)
 
         # 009999992...333.44.5555.6666.777.888899
         # 2333133121414131402 Raw data
-        #        0099.777244.2...333.44.5555.6666.777.888899
+        #        00...111...2...333.44.5555.6666.777.888899
         #        00...111...2...333.44.5555.6666.777.888899 Formatted
         # print("00992111777.44.333....5555.6666.....8888..") desired output
 
-        print(altered_disk_map)
-        ouput_processor(altered_disk_map)
+        #print(altered_disk_map)
+        print(ouput_processor(altered_disk_map))
 
 my_code()
